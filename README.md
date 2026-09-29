@@ -2,8 +2,8 @@
 >**Source Code:** The full implementation is hosted in a private repository.
 > Access is granted to recruiters and collaborators upon request.
 > → [Request access](mailto:irene.ghioni@gmail.com?subject=Access%20request%20-%20UV-Curing%20Predictor)    
-<br/>
-[![Source Code](https://img.shields.io/badge/Source_Code-Private-6e7681?style=for-the-badge&logo=github)](https://github.com/ireneghioni-glitch/AI-Powered-UV-Curing-Predictor-and-PI-Discovery)
+><br/>
+>[![Source Code](https://img.shields.io/badge/Source_Code-Private-6e7681?style=for-the-badge&logo=github)](https://github.com/ireneghioni-glitch/AI-Powered-UV-Curing-Predictor-and-PI-Discovery)
 
 [![Status](https://img.shields.io/badge/STATUS-WORK_IN_PROGRESS-F97316?style=for-the-badge&logo=statuspage&logoColor=white)](#)
 [![Version](https://img.shields.io/badge/version-1.0.0-334155?style=for-the-badge)](https://github.com/ireneghioni-glitch/AI-Powered-UV-Curing-Predictor-and-PI-Discovery/releases/tag/v1.0.0)
