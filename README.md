@@ -253,7 +253,7 @@ Navigate to `http://localhost:3000` in your browser.
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
 ### Current Status: Local-First Architecture
 
