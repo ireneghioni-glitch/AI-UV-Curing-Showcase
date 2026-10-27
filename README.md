@@ -188,38 +188,50 @@ To overcome the lack of public experimental datasets while maintaining industria
 
 ```text
 AI-Powered-UV-Curing-Predictor-and-PI-Discovery/
-├── app/                                  # Reflex web application
-│   ├── pages/index.py                    # Interactive frontend dashboard
-│   ├── app.py                            # Reflex main entry point
-│   ├── models.py                         # SQLModel database schema (CuringLog)
-│   └── state.py                          # Application state & event handlers
-├── inference/                            # Runtime inference module
-│   ├── __init__.py
-│   └── pipeline.py                       # End-to-end predict() function with lazy singletons
-├── shared/                               # Shared reusable core client
-│   ├── __init__.py
-│   ├── pubchem_client.py                 # Thread-safe PubChem API & cache client
-│   └── molecule_images.py                # RDKit rendering & image preprocessing
-├── phase1/                               # Phase 1: Ingestion & Image Generation
-│   ├── fetch_molecules_PIs.py            # PI SMILES retrieval script
-│   ├── fetch_molecules_monomers.py       # Monomer SMILES retrieval script
-│   ├── generate_images_PIs.py            # PI 2D image rendering
-│   ├── generate_images_monomers.py       # Monomer 2D image rendering
-│   └── data/                             # Raw CSV data & metadata
-├── phase2/                               # Phase 2: CV Feature Extraction
-│   ├── extract_embeddings_PIs.py         # MobileNetV2 PI feature extraction
-│   └── extract_embeddings_monomers.py    # MobileNetV2 Monomer feature extraction
-├── phase3/                               # Phase 3: Deep Learning Core (Baseline)
-│   ├── model.py                          # PyTorch CuringPredictorNet architecture
-│   └── train_regressor.py                # PyTorch MLP training loop
-├── phase4/                               # Phase 4: Tabular Integration & XGBoost
-│   ├── train_xgboost.py                  # DoE, PCA & XGBoost training pipeline
-│   ├── pca_pi.pkl / pca_mono.pkl         # Serialized PCA transformers
-│   └── xgboost_model.json                # Serialized XGBoost model
-├── phase.../docs/                        # Project documentation & logs
-├── requirements-training.txt             # Explicit Python dependencies for chemvision_env
-├── requirements-app.txt                  # Explicit Python dependencies for reflex_env
-└── README.md                             # Repository documentation
+├── app/
+│   ├── app.py
+│   ├── models.py
+│   ├── pages/
+│   │   └── index.py
+│   └── state.py
+├── inference/
+│   └── pipeline.py
+├── phase1/
+│   ├── fetch_molecules_PIs.py
+│   ├── fetch_molecules_monomers.py
+│   ├── generate_images_PIs.py
+│   ├── generate_images_monomers.py
+│   └── data/
+│       ├── molecules_PIs.csv
+│       ├── molecules_monomers.csv
+│       ├── molecular_metadata.csv
+│       ├── molecular_metadata_monomers.csv
+│       └── smiles_cache_PIs.csv
+├── phase2/
+│   ├── extract_embeddings_PIs.py
+│   ├── extract_embeddings_monomers.py
+│   └── data/
+│       ├── embeddings_PIs.npy
+│       ├── embeddings_monomers.npy
+│       └── embeddings_metadata_PIs.csv
+├── phase4/
+│   ├── train_xgboost.py
+│   ├── pca_pi.pkl
+│   ├── pca_mono.pkl
+│   ├── model_config.json
+│   ├── xgboost_model.json
+│   └── data/
+│       └── doe_dataset.csv
+├── shared/
+│   ├── molecule_images.py
+│   ├── pubchem_client.py
+│   ├── qsar_descriptors.py
+│   └── utils.py
+├── README.md
+├── requirements-app.txt
+├── requirements-training.txt
+└── tests/
+    └── test_qsar_simulation.py
 ```
 
 ---
