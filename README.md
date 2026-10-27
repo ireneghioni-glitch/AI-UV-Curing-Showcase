@@ -5,8 +5,11 @@
 ><br/>
 >[![Source Code](https://img.shields.io/badge/Source_Code-Private-6e7681?style=for-the-badge&logo=github)](https://github.com/ireneghioni-glitch/AI-Powered-UV-Curing-Predictor-and-PI-Discovery)
 
+# UV-Curing Predictor and Photoinitiator Discovery
+
 [![Status](https://img.shields.io/badge/STATUS-WORK_IN_PROGRESS-F97316?style=for-the-badge&logo=statuspage&logoColor=white)](#)
-[![Version](https://img.shields.io/badge/version-1.0.0-334155?style=for-the-badge)](https://github.com/ireneghioni-glitch/AI-Powered-UV-Curing-Predictor-and-PI-Discovery/releases/tag/v1.0.0)
+[![Version](https://img.shields.io/badge/version-1.1.0-334155?style=for-the-badge)](https://github.com/ireneghioni-glitch/AI-Powered-UV-Curing-Predictor-and-PI-Discovery/releases/tag/v1.0.0)
+[![Live Reflex App](https://img.shields.io/badge/Reflex_App-To_Be_Deployed-7C3AED?style=for-the-badge&logo=reflex&logoColor=white)](https://ai-powered-uv-curing-predictor.reflex.run)
 [![Python 3.9.25](https://img.shields.io/badge/Python-3.9.25-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Conda](https://img.shields.io/badge/Conda-44A833?style=for-the-badge&logo=anaconda&logoColor=white)](https://docs.conda.io/)
 [![XGBoost](https://img.shields.io/badge/XGBoost-Machine_Learning-2887D7?style=for-the-badge)](https://xgboost.readthedocs.io/)
@@ -17,18 +20,24 @@
 
 An end-to-end, full-stack Machine Learning and Cheminformatics platform designed to predict polymerization conversion percentage (**% Double Bond Conversion**) for UV-curable formulations and enable virtual screening for novel Photoinitiator (PI) discovery. Built with a modular 5-phase data pipeline, computer vision feature extraction, XGBoost gradient boosting, and an interactive **Reflex** web application.
 
-> **Status Notice: Ongoing Development (Bootcamp Project)**  
-> This project is currently under active development as part of the **BeCode AI & Data Science Bootcamp** (Specialization Phase). The MVP implementation is fully functional, with a comprehensive roadmap for industrial deployment, QSAR feature engineering, and closed-loop generative discovery.
+> **Status Notice: Ongoing Development** 
+> This project is under active development. Version 1.1 adds the photochemical Φ_cl efficiency channel to the simulation engine and a pair-level PI–monomer compatibility classifier to the training pipeline. The roadmap now focuses on active learning, generative photoinitiator discovery, and graph/transformer molecular encoders. A poster presenting the Φ_cl-driven representation shift will be shown at ChemAI Amsterdam (November 4, 2026).
 
 * **Domain:** Cheminformatics, Photopolymer Chemistry, Computer Vision & Applied Machine Learning
-* **Project Nature:** Solo Capstone Project (BeCode AI & Data Science Bootcamp)
+* **Project Nature:** Solo Capstone Project
 * **Frameworks & Stack:** Python, RDKit, MobileNetV2 (TensorFlow/Keras), PyTorch, XGBoost, Scikit-Learn, Reflex, SQLModel
+
+<br>
 
 > **Deployment Note:** Cloud deployment via Reflex Cloud is planned for the next iteration. The application currently runs locally and is fully reproducible by following the setup instructions below.
 
 <p align="center">
-  <img src="img/v_1.0.0_interface.png" alt="UV-Curing Predictor web interface" width="720">
-</p>
+  <img src="img/wip.gif" width="150" alt="work in progress">
+</p>  
+<p align="center">
+    <i>I’m currently giving the app’s UI a fresh new look! A screenshot of it will be available here soon :)</i>
+</p> 
+
 
 ---
 
@@ -38,12 +47,19 @@ An end-to-end, full-stack Machine Learning and Cheminformatics platform designed
 In the formulation chemistry of UV-curable coatings, inks (3D printing, inkjet), and adhesives, achieving high double-bond conversion percentage ($\% \text{Conversion}$) is critical for mechanical strength, solvent resistance, and safety (preventing uncured monomer migration). However, experimental data on photoinitiator reactivity and industrial ink formulations are highly **proprietary and non-accessible** in public domains.
 
 ### Chemically Sound MVP Data Simulation
-To overcome the lack of public experimental datasets while maintaining industrial relevance, the MVP dataset was generated using a **chemically and physically informed simulation engine**:
-* **Radical Polymerization Kinetics:** Incorporates intrinsic photoinitiator efficiency (Type I unimolecular cleavage vs. Type II bimolecular hydrogen abstraction).
-* **Monomer Reactivity & Steric Effects:** Models functionality (tri-acrylates > di-acrylates > mono-acrylates > methacrylates) and steric hindrance ($\alpha$-methyl group penalty).
-* **Solubility & Medium Compatibility:** Integrates octanol-water partition coefficient ($\text{LogP}$) penalties for hydrophobic PIs in aqueous media ("like dissolves like").
-* **UV Dose & Concentration Kinetics:** Implements first-order saturation curves for UV energy dose ($E_{\text{UV}}$) and a Beer-Lambert UV-shielding bell-shaped curve peaking at $3\%$ PI concentration.
-* **Deterministic Full-Factorial Design:** Generates a $520,000$-row Design of Experiments (DoE) using MD5 hash-based deterministic seeds for full reproducibility across $560$ PI-monomer pairs under $1,000$ environmental conditions.
+To overcome the lack of public experimental datasets while maintaining industrial relevance, the MVP dataset was generated using a **chemically and physically informed simulation engine:**
+
+* **Photoinitiator Photochemistry (Φ_cl channel):** Each PI is assigned a quantum efficiency class drawn from the literature (Fouassier, Photoinitiation, Photopolymerization, and Photocuring, Hanser 1995; Decker, Prog. Polym. Sci. 21, 593, 1996): acylphosphine oxides Φ_cl = 0.85 (TPO, BAPO), benzoyl ketones Φ_cl = 0.60 (Irgacure 184, 651), Type II Φ_cl = 0.45 (benzophenones, thioxanthones), co-initiators Φ_cl = 0.00 (amines, thiols — no initiation without a PI partner). This channel multiplies the kinetic progress independently of the solubility channel and is what makes the simulated target structurally photochemistry-dependent.
+
+* **Photoinitiator Solubility (LogP channel):** Wildman–Crippen LogP drives a phase-separation penalty in aqueous media: hydrophobic PIs ($LogP > 2$) precipitate and lose efficiency ("like dissolves like"). This channel is orthogonal to $Φ_cl$: a PI can be soluble but photochemically weak, or efficient but phase-separate.
+
+* **Monomer Reactivity & Steric Effects:** SMARTS-based detection of acrylate vs methacrylate motifs, functionality-weighted reactivity (tri-acrylates > di-acrylates > mono-acrylates > methacrylates), and α-methyl steric penalty for methacrylates.
+
+* **Diffusion-Controlled Vitrification Ceiling:** $α_{max}$ decreases with crosslink density (95% base, −6% per additional reactive group beyond the first). Multi-acrylates vitrify earlier, trapping radicals and halting the reaction.
+
+* **UV Dose & Concentration Kinetics:** First-order saturation curve for UV energy dose ($τ_{dose} = 250 mJ/{cm}^2$); Beer-Lambert inner-filter effect peaking at 3 wt% PI and decaying exponentially beyond.
+
+* **Deterministic Full-Factorial Design:** A $104,000$-row DoE ($520$ PI–monomer pairs × $200$ process conditions) covers the grid `is_aqueous` × `pi_conc` (0.5–5.0 wt%) × `uv_dose` (100–1000 mJ/cm²). ***Note:*** $LogP$ is not a process variable: it is a molecular property, so it enters the target through the PI and monomer descriptors, not through the factorial grid.
 
 > **Transferability to Real Lab Data:**  
 > The entire architecture (from PubChem API ingestion and RDKit pre-processing to PCA dimensionality reduction and XGBoost inference) is engineered specifically to accept real laboratory experimental data (e.g., FTIR spectroscopy curing curves) without structural modifications.
@@ -76,27 +92,43 @@ To overcome the lack of public experimental datasets while maintaining industria
                                                 |
                                                 v
                                +----------------------------------+
-                               |       phase2/extract_embed.py    |
-                               | - Pretrained MobileNetV2 (Frozen) |
+                               | phase2/extract_embeddings_*.py   |
+                               | - Pretrained MobileNetV2 (Frozen)|
                                | - Global Average Pooling         |
                                | - 1280-D Visual Fingerprint      |
                                +----------------------------------+
                                                 |
                                                 v
                                +----------------------------------+
-                               |   DATASET REDUCTION & DO E       |
+                               |  DATASET REDUCTION & DoE ENGINE  |
                                | - 4-Rotation Augmentation Avg    |
                                | - PCA Compression (PI:51, Mono:9)|
-                               | - 520k-Row Factorial Grid        |
+                               | - Physics Simulation:            |
+                               |     LogP (solubility) + Φ_cl     |
+                               | - 520 pairs × 200 conditions     |
+                               |   = 104,000-row factorial grid   |
                                +----------------------------------+
                                                 |
-                                                v
-                               +----------------------------------+
-                               |      phase4/train_xgboost.py     |
-                               | - Tabular Concatenation          |
-                               | - XGBoost Regressor (Early Stop) |
-                               | - Output: % Conversion           |
-                               +----------------------------------+
+                        +-----------------------+-----------------------+
+                        |                                               |
+                        v                                               v
+       +----------------------------------+          +----------------------------------+
+       |   phase4/train_xgboost.py        |          | phase4/train_compatibility_      |
+       | - Tabular Concatenation          |          |        classifier.py             |
+       | - XGBoost Regressor (Early Stop) |          | - Pair-level aggregation         |
+       | - R² = 0.978, RMSE = 1.49%       |          |   (1,020 unique groups)          |
+       | - Output: % Conversion           |          | - RandomForest classifier        |
+       +----------------------------------+          | - 4107-D Morgan FP vs 11 physical|
+                        |                            | - PR-AUC 0.770 vs 0.739          |
+                        v                            +----------------------------------+
+       +----------------------------------+                           |
+       | xgboost_model.json               |                           v
+       | pca_pi.pkl / pca_mono.pkl        |          +----------------------------------+
+       | model_config.json                |          | compatibility_classifier.pkl     |
+       +----------------------------------+          | + audit report (docs/)           |
+                        |                            +----------------------------------+
+                        |                                               |
+                        +-----------------------+-----------------------+
                                                 |
                                                 v
                                +----------------------------------+
@@ -113,13 +145,25 @@ To overcome the lack of public experimental datasets while maintaining industria
                                +----------------------------------+
 ```
 
+> **Note on Phase 3 (PyTorch MLP baseline):**  
+> A Multi-Layer Perceptron was trained in phase3/ as an educational baseline to compare tabular deep learning against XGBoost on this dataset. It is not part of the runtime pipeline: XGBoost proved superior on the 63-dimensional tabular representation, and the MLP remains a pedagogical artifact. It can be ignored when tracing the production data flow.
+
 ### System Workflow
-1. **SMILES Resolution (`shared/pubchem_client.py`):** Resolves commercial trade names or CAS Registry Numbers (e.g., `Benzophenone` or `119-61-9`) into canonical SMILES strings via a three-tier hierarchy (Cache CSV $\rightarrow$ Curated Manual Dictionary $\rightarrow$ PubChem REST API).
-2. **Image Generation (`shared/molecule_images.py`):** RDKit renders 2D molecular structures into $224 \times 224$ grayscale pixel grids with 4-fold rotational augmentation ($0^\circ, 90^\circ, 180^\circ, 270^\circ$).
+1. **SMILES Resolution (`shared/pubchem_client.py`):** Resolves commercial trade names or CAS Registry Numbers (e.g., `Benzophenone` or `119-61-9`) into canonical SMILES strings via a three-tier hierarchy (Cache CSV → Curated Manual Dictionary → PubChem REST API).
+
+2. **Image Generation (`shared/molecule_images.py`):** RDKit renders 2D molecular structures into $224 × 224$ grayscale pixel grids with 4-fold rotational augmentation (0°, 90°, 180°, 270°).
+
 3. **Computer Vision Feature Extraction (`phase2/`):** Pass molecular images through a frozen pre-trained **MobileNetV2** backbone on ImageNet. Global Average Pooling extracts a 1280-dimensional visual embedding per image.
-4. **Dimensionality Reduction & DoE Alignment (`phase4/`):** Rotational augmentations are averaged per molecule. Principal Component Analysis (PCA) compresses 1280-D embeddings down to $51$ components for PIs and $9$ for monomers (preserving $100\%$ variance while reducing RAM usage by $98.7\%$).
-5. **Tabular Machine Learning (`phase4/`):** Combines visual features with process parameters (`Is_Aqueous`, `LogP`, `%PI`, `UV_Dose`). Trains an **XGBoost Regressor** with early stopping, achieving $R^2 = 0.9860$ and $\text{MAE} = 1.15\%$.
-6. **Inference Pipeline & Reflex Web App (`inference/`, `app/`):** Exposes `predict()` with lazy singleton model loading (30x speedup for warm requests) and a reactive web dashboard.
+
+4. **Dimensionality Reduction & DoE Construction (`phase4/train_xgboost.py`):** Rotational augmentations are averaged per molecule. Principal Component Analysis (PCA) compresses 1280-D embeddings down to 51 components for PIs and 9 for monomers ($51 = N_{PI} − 1$, full-rank; $9 = N_{mono} − 1$). A deterministic full-factorial DoE then covers 520 PI–monomer pairs × 200 process conditions (`is_aqueous` × 10 `pi_conc` × 10 `uv_dose`) = **104,000 rows**.
+
+5. **Physics-Informed Simulation:** Target conversion values are generated through a two-channel PI model. Channel 1 (solubility) applies a Wildman–Crippen LogP penalty in aqueous media. Channel 2 (photochemistry) multiplies the kinetic progress by the class-specific quantum efficiency $Φ_cl$: acylphosphine 0.85, benzoyl 0.60, Type II 0.45, co-initiator 0.00. These are combined with monomer reactivity, UV dose saturation, and Beer–Lambert shielding.
+
+6. **Tabular Machine Learning (`phase4/train_xgboost.py`):** Concatenates 51 PI PCA + 9 monomer PCA + 3 process parameters (`Is_Aqueous`, `%PI`, `UV_Dose`) into a **63-dimensional** feature vector. Trains an **XGBoost Regressor** with validation-based early stopping, achieving $R^{2} = 0.978$ and $RMSE = 1.49$%.
+
+7. **Pair-Level Compatibility Classifier (`phase4/train_compatibility_classifier.py`):** The DoE is aggregated to 1,020 unique (PI, monomer, medium) groups by taking the max conversion across all process windows. A **Random Forest** classifier predicts whether a pair can reach viable conversion (≥ 60%) under any condition; the correct question for a fast pre-screening filter. With the $Φ_cl$ physics in the target, **4107-D Morgan Fingerprints (PR-AUC 0.770)** outperform **11 physical descriptors (PR-AUC 0.739)**, demonstrating that *the molecular representation must follow the physics of the target.* Full audit in `docs/compatibility-audit.md`.
+
+8. **Inference Pipeline & Reflex Web App (`inference/`, `app/`):** Exposes `predict()` with lazy singleton model loading (30× speedup for warm requests) and a reactive web dashboard.
 
 ---
 
@@ -251,89 +295,90 @@ Navigate to `http://localhost:3000` in your browser.
 
 ---
 
----
-
-## Deployment
-
-### Current Status: Local-First Architecture
-
-The application is currently designed to run **locally** in a reproducible dual-environment setup (see [Local Setup](#local-setup--deployment) above). This choice is deliberate and reflects the current stage of the project:
-
-- **Training environment (`chemvision`, Python 3.9):** offline, deterministic, and optimized for RDKit + MobileNetV2 + XGBoost.
-- **Application environment (`reflex_app`, Python 3.11):** online serving, with NumPy 2.x compatibility required by the Reflex stack.
-
-This separation mirrors the standard MLOps pattern of isolating **offline training** from **online inference**, and avoids an irreconcilable NumPy 1.x vs 2.x dependency conflict.
-
-### Deployment Roadmap
-
-| Stage | Target | Status | Notes |
-|---|---|---|---|
-| 1 | Local reproduction | ✅ Done | Fully documented in [Local Setup](#local-setup--deployment) |
-| 2 | Reflex Cloud | 🔄 In progress | Single-command deploy via `reflex deploy`; requires externalizing model artifacts |
-| 3 | Dockerized inference API | 📋 Planned | FastAPI wrapper around `inference/pipeline.py` + containerized model serving |
-| 4 | Public demo + private code | 📋 Planned | Public Reflex demo URL, source code retained in private repo |
-
-### How to Deploy (Reflex Cloud — next iteration)
-
-Once model artifacts (`xgboost_model.json`, `pca_pi.pkl`, `pca_mono.pkl`) are externalized to a cloud storage bucket, deployment reduces to:
-
-```bash
-conda activate reflex_app
-reflex deploy
-```
-
->⚠️ Current blocker: The lazy singleton loading of TensorFlow/MobileNetV2/XGBoost (~8s cold start) must be replaced by a warm-up at container startup before Reflex Cloud deployment is viable for production use. See Roadmap § 6 — UI/UX Optimization.
-
----
-
 ## Roadmap & Next Steps
-
 The project follows a structured post-MVP roadmap detailed in the `docs/` repository files:
 
-1. **QSAR Descriptor Integration (`qsar-descriptor-integration-guide-en.md`):**  
-   Transitioning from static factors to dynamic RDKit QSAR descriptors: Double Bond Density (DBD), SMARTS pattern matching for acrylates vs. sterically hindered methacrylates, and topological polar surface area.
-2. **Dual-Model Formulation & Printing Window (`desired_prod_curing-and-formulation-prediction-pipeline.md`):**  
-   Expanding into a dual-model system:
-   * **Model 1 (Printing/Jetting):** Predicts blend viscosity ($\eta_{\text{mix}}$), surface tension ($\gamma_{\text{mix}}$), and calculates the Ohnesorge/Z-number printability window ($1 < Z < 10$).
-   * **Model 2 (Curing):** Predicts double-bond conversion and cured film $T_g$.
-   * **Multi-Objective Optimization:** Integrating **Optuna** Bayesian optimization to discover optimal ink compositions.
-3. **Active Learning & Generative Discovery (`post-mvp-roadmap.md`):**  
-   * **Active Learning:** Implementing Bayesian Optimization with Upper Confidence Bound (UCB) acquisition functions to select optimal experimental candidates.
-   * **Generative Modeling:** Building a Variational Autoencoder (VAE) on SMILES for *in-silico* generation of novel photoinitiators.
-   * **Closed-Loop Discovery:** Coupling generator, predictor, and acquisition function in an automated loop.
-4. **Architecture & Engineering Enhancements:**  
-   * **Config Externalization (`future-refactor-externalize-config.md`):** Externalizing molecule configuration into versioned JSON files.
-   * **SQLModel Migration (`rx-model-to-sqlmodel-migration-guide.md`):** Migrating database models to pure `SQLModel` for Reflex 1.0 compatibility.
-   * **Ecosystem Integration:** Synthesis route chatbot for newly discovered PIs and linking the tool to laboratory inventory/ERP software.
-5. **Beyond CNN Embeddings: Graph and Transformer Architectures (Exploratory):**  
-   The current pipeline relies on 2D image embeddings extracted via a pre-trained CNN. While pedagogically valuable and functionally effective, this is not the standard representation used in modern cheminformatics. Future iterations may explore complementary or alternative molecular encoders:  
-   * **Graph Neural Networks (GNNs):** Represent molecules as graphs (atoms as nodes, bonds as edges) instead of images. GNNs preserve full molecular topology, avoid information loss from 2D rendering, and are considered the state-of-the-art approach for molecular property prediction. Common frameworks: **PyTorch Geometric**, **DGL**.  
-   * **Pre-trained Chemical Transformers:** Models such as **ChemBERTa** and **MolFormer** are pre-trained on millions of SMILES strings and can serve as general-purpose molecular encoders for both property prediction and downstream generation tasks.  
-   * **Generative Molecular Architectures:** Variational Autoencoders (VAEs) and diffusion models operating directly on molecular graphs or SMILES for *de novo* molecular design — the technical foundation for automated photoinitiator discovery.  
+1. **QSAR Descriptor Integration - PARTIALLY IMPLEMENTED (`qsar-descriptor-integration-guide-en.md`):**  
+✅ **Done:** SMARTS-based acrylate vs methacrylate detection, functionality-weighted reactivity, α-methyl steric penalty, Wildman-Crippen LogP solubility penalty, and the Φ_cl photochemical efficiency channel (4 literature-derived classes: acylphosphine 0.85, benzoyl 0.60, Type II 0.45, co-initiator 0.00).  
+⬜ **Pending:** Double Bond Density (DBD) per monomer, topological polar surface area (TPSA) on the monomer side, quantum-mechanical descriptors (HOMO/LUMO energies) for radical stability.  
+2. **Simulation Engine Refinements:**
+    - **Hybrid lab + simulated data (`train_xgboost.py` → `simulate_target_values`):** When FTIR conversion curves become available for specific PI–monomer pairs, substitute the simulated target with the measured value instead of generating it. The pipeline is already structured to accept this without architectural change.
+    - **Ink/coating thickness:** Introduce cured-film thickness as a simulation variable.It couples with the Beer–Lambert inner-filter effect and controls depth-resolved conversion, critical for 3D printing and thick adhesive layers.
+    - **Multi-PI formulations:** Generalize the simulator to compute conversion for PI blends (as used in water-based ink formulations), not only single PI per formulation. Requires modeling of Type I / Type II synergy and co-initiator pairing.
+    - **$α_{max}$ for monomer blends:** The current vitrification ceiling assumes a single monomer species with first-order crosslink penalty. Blends require a mixture-weighted $T_{g}$ model (Fox or Gordon–Taylor) rather than a linear crosslink counter.
+    - **Configurable heuristic constants:** Revise and externalize the hardcoded coefficients in `simulate_conversion_qsar()` (`tau_dose = 250`, the 0.60 + 0.40 term, the $α_{max}$ penalties) into a versioned JSON or YAML config. This makes the simulator auditable and tunable without touching code.
+    - **Additional quality metrics (post-poster):** Beyond R² and RMSE, add Spearman ρ between predicted and true conversion, calibration curves per $Φ_cl$ class, and stratified RMSE by monomer functionality. Track them in `model_training_report.md` for a richer poster-vs-paper comparison.
+3. **Learned Classifiers & Representation Alternatives:**
+    - **PI photochemical class classifier:** Train a model to predict the $Φ_cl$ class (acylphosphine / benzoyl / Type II / co-initiator) directly from SMILES, replacing the current literature lookup with a learned mapping. This would close the loop on "the CNN already seems to encode this information (see `Visual_47` audit)". A parallel classifier for monomer reactivity class (mono / di / tri-acrylate) is a natural companion.
+    - **Morgan Fingerprints (2048-bit) + XGBoost as regression alternative:** The pair-level compatibility classifier already demonstrated that 4107-D Morgan FPs outperform 11 physical descriptors when the target includes photochemical physics (PR-AUC 0.770 vs 0.739). Evaluate whether the same holds for the regression target, as a complement (not replacement) to the CNN embedding path. The CNN remains the pedagogical anchor of the bootcamp; Morgan FP becomes a second, chemistry-native pipeline to compare.
+    - **Latent factor audit: extend, don't redo:** The post-hoc audit (`docs/latent_factors_audit.md`) is complete: `Visual_0` ↔ molecular size (ρ = +0.84), `Visual_1` ↔ aromaticity (ρ = +0.51), `Visual_2` ↔ ring topology (ρ = −0.45). Conclusive separation of the acylphosphine subclass (n = 3) requires expanding the PI dataset to ≥ 20 acylphosphines; when that happens, rerun the audit as a one-line script.
+4. **Dual-Model Formulation & Printing Window (`desired_prod_curing-and-formulation-prediction-pipeline.md`):**
+Expanding into a dual-model system:  
+    - **Model 1 (Printing/Jetting):** Predicts blend viscosity ($η_{mix}$), surface tension ($γ_{mix}$), and calculates the Ohnesorge/Z-number printability window ($1 < Z < 10$).
+    - **Model 2 (Curing):** Predicts double-bond conversion and cured film $T_{g}$.
+    - **Multi-Objective Optimization:** Integrating Optuna Bayesian optimization to discover optimal ink compositions.
+5. **Active Learning & Generative Discovery (`post-mvp-roadmap.md`):**
+    - **Active Learning:** Bayesian Optimization with Upper Confidence Bound (UCB) acquisition functions to select optimal experimental candidates.
+    * **Generative Modeling:** Variational Autoencoder (VAE) on SMILES for *in-silico* generation of novel photoinitiators.
+    * **Closed-Loop Discovery:** Coupling generator, predictor, and acquisition function in an automated loop.
+6. **Architecture & Engineering Enhancements:**
+    - **Runtime Catalogue Management - PARTIALLY IMPLEMENTED:**  
+    ✅ **Done:** The molecule catalogue is fully data-driven and no longer hardcoded in Python. `data/entities.yaml` is the single source of truth for photoinitiators and monomers; `shared/entity_registry.py` loads it, exposes flat name lists (`get_pi_names`, `get_monomer_names`), and builds the manual fallback dictionary consumed by shared/pubchem_client.py. For any molecule *not* in the YAML, `pubchem_client.py` still resolves it at inference time via the three-tier hierarchy (local cache → YAML fallback → PubChem REST API). Net effect: no Python file needs editing to add a molecule; any compound PubChem knows can be predicted today.  
+    ⬜ **Pending:** Two gaps remain on top of the registry. (1) **Write-back:** there is no function that promotes a successful ad-hoc PubChem lookup into a new entry of `entities.yaml` (with a stable internal name, aliases, and curated metadata), so the registry only grows by manual editing. (2) **UI:** no app-level action to add a resolved molecule to the catalogue, and no autocomplete that queries both `entities.yaml` and the live PubChem resolver.  
+    The gap is between *"no hardcoded lists, everything resolvable"* (done) and *"the catalogue can grow itself from user activity"* (pending).
+    - **Config externalization - PARTIALLY IMPLEMENTED (`future-refactor-externalize-config.md`):**  
+    ✅ **Done:** Molecule configuration is fully externalized. `data/entities.yaml` is the versioned single source of truth for photoinitiators and monomers (names, aliases, fallback SMILES, roles); `shared/entity_registry.py` loads it and exposes flat name lists and the manual fallback dictionary. Stable, low-cardinality rules (trade-name prefixes, monomer suffix patterns, unit lists, compatibility threshold) intentionally remain in `entity_registry.py`, with a documented threshold (`> ~20 rules → move to entity_rules.yaml`). No Python file needs editing to add a molecule.  
+    ⬜ **Pending:** Simulator constants are still hardcoded inside `train_xgboost.py` and should be externalized to a versioned config file (YAML or JSON) alongside entities.yaml. The set includes: `PI_EFFICIENCY_LOOKUP` (the four $Φ_cl$ values), `tau_dose`, `alpha_max` base value and per-crosslink penalty, the monomer-factor blend term `0.60 + 0.40 * (mono_factor / 1.5)`, the Beer–Lambert peak (3.0 wt%) and decay constant (2.5), the LogP solubility-penalty coefficients (25.0 / 8.0 / 2.0), and the logistic mapping parameters (midpoint 40.0, scale 12.0). Also pending: externalizing the factorial grid (`pi_conc_list`, `uv_dose_list`) so that DoE composition is reproducible from config, not from code. When done, changing a physical coefficient should not require touching Python.  
+    - **SQLModel migration (rx-model-to-sqlmodel-migration-guide.md):** Migrating database models to pure SQLModel for Reflex 1.0 compatibility, with an explicit database schema design for the R&D use case (prediction history, formulation tracking, and rheology/printability records).
+    - **Embedding Interpretability & Visualization — PARTIALLY IMPLEMENTED:**  
+    ✅ **Done:** The sanity check on what the 1280-D embeddings capture has been performed analytically, not visually. `phase4/audit_latent_factors.py` applies PCA to the MobileNetV2 embeddings and runs two complementary tests: (1) **Spearman ρ** between each PCA component and a 16-descriptor RDKit panel, and (2) **Kruskal–Wallis** across the four $Φ_cl$ classes, with BH-FDR correction across 51 tests. Results (in `docs/latent_factors_audit.md`): 
+        - `Visual_0` ↔ molecular size (ρ = +0.84 with HeavyAtoms/LabuteASA/MolMR); 
+        - `Visual_1` ↔ aromaticity (ρ = +0.51 with NumAromaticRings); 
+        - `Visual_2` ↔ ring topology (ρ = −0.45 with RingCount).   
 
-   These directions are not part of the immediate MVP roadmap, but they define the standard toolbox for advancing this project toward industrial-grade molecular discovery.
-6. **User Interface & User Experience Optimization:**    
-   The current Reflex interface is functional and pedagogically clear, but it was designed as an MVP demonstration rather than as a polished end-user product. Several known limitations remain:  
-   * **First-Prediction Latency:** The initial request triggers TensorFlow, MobileNetV2, XGBoost, and PCA loading (~8 seconds), producing a visible delay for the first user. Improvement: warm up the lazy singletons during application startup, so that the first user does not pay the cost.  
-   * **No Responsive Layout:** The form and result card are optimized for desktop only. Improvement: add Reflex responsive components (`rx.desktop_only`, `rx.mobile_and_tablet`) to ensure usability on tablets and mobile devices.  
-   * **Minimal Error Feedback:** Failed lookups show a raw text message. Improvement: distinguish between "molecule not found", "CAS not registered in PubChem", "invalid input", and network errors with tailored messages and suggested corrections.  
-   * **No Prediction History View:** Every prediction is logged in the `curinglog` database table, but the interface does not expose this data. Improvement: add a `/history` page with a filterable table of past predictions, useful for auditing and comparing formulation variants.  
-   * **No Dark Mode Toggle:** `rx.theme(appearance="light")` is hardcoded. Improvement: expose a user-controlled light/dark toggle.  
-   * **No Input Autocomplete:** Molecule names must be typed exactly (or resolved via CAS). Improvement: add an autocomplete dropdown populated from the existing `molecules_pis` and `molecules_monomers` CSV files, reducing typos and improving discoverability.    
+        Separation of the acylphosphine subclass is inconclusive at the current dataset size (n = 3), documented as a limitation rather than hidden.   
+        ⬜ **Pending (low priority):** A 2D projection (t-SNE or UMAP) of the embeddings, colored by $Φ_cl$ class and by monomer functionality, persisted to `phase2/visuals/embedding_umap.png`. Not a scientific gap: the audit already answers the underlying question, but a useful figure for presentations and a sanity check for future dataset expansions. UMAP is already a dependency (bertopic), so no new install is required.
+    - **Ecosystem integration:** Synthesis-route chatbot for newly discovered PIs; linking the tool to laboratory inventory / ERP software.
+7. **User Interface & UX Optimization:**  
+The current Reflex interface is functional and pedagogically clear, but designed as an MVP demonstration rather than a polished end-user product. Known limitations:
+    - **First-prediction latency:** ~8 s cold start while TensorFlow + MobileNetV2 + XGBoost load. Improvement: warm up lazy singletons on app startup.
+    - **Minimal error feedback:** Distinguish between "molecule not found", "CAS not registered in PubChem", "invalid input", and network errors with tailored messages.
+    - **No prediction history view:** Expose the curinglog table via a `/history` page with filters.
+    - **No input autocomplete:** Populate a dropdown from the existing molecule CSVs; extend to dynamic entries once the catalogue is no longer hardcoded.
+    - **No responsive layout:** Add `rx.desktop_only` / `rx.mobile_and_tablet` components.
+    - **No dark mode toggle:** `rx.theme(appearance="light")` is hardcoded.
+8. **Beyond CNN Embeddings - Graph and Transformer Architectures (Exploratory):**  
+The current pipeline relies on 2D image embeddings from a pre-trained CNN. While pedagogically valuable and functionally effective, this is not the standard representation in modern cheminformatics. Future iterations may explore:
+    - **Graph Neural Networks (GNNs):** PyTorch Geometric, DGL.
+    - **Pre-trained Chemical Transformers:** ChemBERTa, MolFormer.
+    - **Generative Molecular Architectures:** VAEs and diffusion models on SMILES for de novo photoinitiator design.
+9. **Learning & Reference Material:**  
+[**TeachOpenCADD**](https://github.com/volkamerlab/teachopencadd): the reference notebook series for cheminformatics + ML. Currently used as a design guide for QSAR descriptors and Morgan fingerprints; will be revisited for GNN and ChemBERTa experiments in item 8.
 
-   None of these items blocks the functional MVP, but together they represent the gap between a working prototype and a product that a formulation chemist would use daily without friction.
+None of these items blocks the functional MVP, but together they represent the gap between a working prototype and a product that a formulation chemist would use daily without friction.
 
 <br>
 
 ## Changelog
 
-### v1.0.0 — 2026-09-12
-First functional MVP release.
-- End-to-end pipeline: SMILES → image → embedding → PCA → XGBoost
-- 520,000-row full factorial dataset with deterministic simulation
-- Reflex web app with lazy singleton inference (<1s warm requests)
-- CAS number support via PubChem synonym lookup
-- SQLModel audit logging of every prediction
+### v1.0.0 — 2026-10-27
+Second pipeline iteration: photochemistry-aware simulation and pair-level compatibility classifier.
+
+- **Physics:** Added the **Φ_cl photochemical efficiency channel** to the simulation engine (acylphosphine 0.85 / benzoyl 0.60 / Type II 0.45 / co-initiator 0.00, literature-sourced from Fouassier and Decker). The simulator now models PI efficiency through two independent channels: LogP (solubility) and Φ_cl (photochemistry).
+
+- **Dataset:** DoE restructured to **520 PI–monomer pairs × 200 process conditions = 104,000 rows**. LogP is no longer a factorial variable: it is a molecular property, not a process parameter, and the previous grid conflated the two.
+
+- **Compatibility classifier:** Pair-level Random Forest pre-screening filter (`phase4/train_compatibility_classifier.py`), aggregated to 1,020 unique (PI, monomer, medium) groups by max conversion across process windows. **Morgan Fingerprints (4107-D) reach PR-AUC 0.770, overtaking the 11-physical-descriptor baseline at 0.739** (random baseline = 0.084). This is the central result: the representation must follow the physics of the target.
+
+- **Interpretability audit:** Post-hoc analysis of the CNN latent factors (`docs/latent_factors_audit.md`, `phase4/audit_latent_factors.py`). Spearman ρ maps `Visual_0` → molecular size (+0.84), `Visual_1` → aromaticity (+0.51), `Visual_2` → ring topology (−0.45). Kruskal–Wallis across Φ_cl classes is inconclusive at this dataset size (n = 3 acylphosphines); analysis is documented as suggestive, not conclusive.
+
+- **Literature mining:** BERTopic topic model on the UV-curing corpus (`phase4/train_bertopic.py`, 9 topics), persisted as interactive HTML in `phase4/visuals/`.
+
+- **Regressor metrics:** XGBoost R² = **0.978**, RMSE = **1.49%** (previous v1.0.0: R² = 0.9860, RMSE = 1.58% on the older DoE). The slight decrease is expected — the target now depends on photochemical structure, which is a harder signal than solubility alone.
+
+- **Feature contract:** 63-dimensional feature vector (51 PI PCA + 9 monomer PCA + 3 process parameters: `Is_Aqueous`, `%PI`, `UV_Dose`). The previous 4th process parameter (LogP) has been correctly moved out of the grid.
+
+- **Documentation:** `data_flow_completed.md` reflects the two-channel physics, the 104k DoE, and the pair-level classifier. `compatibility-audit.md` and `latent_factors_audit.md` added to `docs/`.
 
 <br>
 
@@ -353,7 +398,6 @@ is included. See the `LICENSE` file for details.
 
 #### Author
 **Irene Ghioni**  
-[AI & Data Science](https://becode.org/en/job-seekers/trainings/ai-data-science) Trainee at [BeCode Belgium](https://becode.org/) *(Specializing in Data Science)*  
-[![LinkedIn Profile](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ireneghioni/) [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/ireneghioni-glitch)  
-
-_Interested in the full codebase? Connect with me on LinkedIn or open an issue in this showcase repo._
+[AI & Data Science](https://becode.org/en/job-seekers/trainings/ai-data-science) Trainee at [BeCode Belgium](https://becode.org/) *(Specializing in Data Science)*   
+R&D | Formulation | Materials Science | UV-Curing | Inks & Coatings  
+[![LinkedIn Profile](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ireneghioni/) [![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/ireneghioni-glitch)
