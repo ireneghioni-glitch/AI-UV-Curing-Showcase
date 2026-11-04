@@ -1,3 +1,10 @@
+>📌 This is the public showcase repository for my specialization project UV-Curing Predictor.  
+>**Source Code:** The full implementation is hosted in a private repository.
+> Access is granted to recruiters and collaborators upon request.
+> → [Request access](mailto:irene.ghioni@gmail.com?subject=Access%20request%20-%20UV-Curing%20Predictor)    
+><br/>
+>[![Source Code](https://img.shields.io/badge/Source_Code-Private-6e7681?style=for-the-badge&logo=github)](https://github.com/ireneghioni-glitch/AI-Powered-UV-Curing-Predictor-and-PI-Discovery)
+
 # UV-Curing Predictor and Photoinitiator Discovery
 
 [![Status](https://img.shields.io/badge/STATUS-WORK_IN_PROGRESS-F97316?style=for-the-badge&logo=statuspage&logoColor=white)](#)
