@@ -1,0 +1,91 @@
+# ==========================================
+# 1. macOS System Files
+# ==========================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ==========================================
+# 2. Windows System Files
+# ==========================================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ==========================================
+# 3. Python & Bytecode
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ==========================================
+# 4. Virtual Environments & Secrets
+# ==========================================
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# ==========================================
+# 5. Jupyter Notebooks & Data Science
+# ==========================================
+.ipynb_checkpoints
+*.ipynb_checkpoints
+*.pkl
+*.h5
+*.npy
+*.npz
+*.pth
+*.onnx
+catboost_info/
+lightning_logs/
+wandb/
+mlruns/
+
+# ==========================================
+# 6. IDE & Editors
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==========================================
+# 7. Reflex & Local Databases
+# ==========================================
+.web/
+*.db
+*.sqlite
+*.sqlite3
+
+# ==========================================
+# 8. Logs & Temporary files
+# ==========================================
+*.log
+audit_run.log
+.cache/
+.pytest_cache/
